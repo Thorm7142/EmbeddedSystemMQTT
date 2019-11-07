@@ -5,7 +5,7 @@
  */
 package Windows;
 
-import Treatment.ThreadIntruder;
+import Treatment.*;
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,14 +20,37 @@ public class MainWindow extends javax.swing.JFrame {
      * Creates new form MainWindow
      */
     
-    ThreadIntruder ti = null;
+    private static boolean JOUR = false;
+    private static boolean NUIT = true;
+    
+    private boolean mode;
+    private int jour;
+    
+    int nbVisiteurs;
+    
+    ThreadIntruder ti;
+    ThreadDate td; 
+
+    public void setMode(boolean mode) {
+        this.mode = mode;
+    }
+
+    public void setJour(int jour) {
+        this.jour = jour;
+    }
+
+    public int getJour() {
+        return jour;
+    }
+    
     
     
     public MainWindow() {
         initComponents();
         
-        //jlp_jour.add(jb_mode_nuit);
-        //jlp_nuit.add(jb_mode_jour);
+        setMode(JOUR);
+        setJour(0);
+        nbVisiteurs = 0;
         
         jlp_jour.setOpaque(true);
         jlp_jour.setVisible(true);
@@ -36,7 +59,9 @@ public class MainWindow extends javax.swing.JFrame {
         jlp_nuit.setVisible(false);
         
         ti = new ThreadIntruder(false, this);
-
+        td = new ThreadDate(true, this); 
+        td.start();
+        
     }
 
     /**
@@ -53,6 +78,8 @@ public class MainWindow extends javax.swing.JFrame {
         jl_titre_jour = new javax.swing.JLabel();
         jl_intitule_visiteurs = new javax.swing.JLabel();
         jl_nb_visiteurs = new javax.swing.JLabel();
+        jl_date = new javax.swing.JLabel();
+        jb_plus = new javax.swing.JButton();
         jlp_nuit = new javax.swing.JLayeredPane();
         jb_mode_jour = new javax.swing.JButton();
         jl_ttitre_nuit = new javax.swing.JLabel();
@@ -77,10 +104,22 @@ public class MainWindow extends javax.swing.JFrame {
         jl_nb_visiteurs.setFont(new java.awt.Font("Sylfaen", 0, 12)); // NOI18N
         jl_nb_visiteurs.setText("0");
 
+        jl_date.setFont(new java.awt.Font("Sylfaen", 0, 12)); // NOI18N
+        jl_date.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jb_plus.setText("+");
+        jb_plus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jb_plusActionPerformed(evt);
+            }
+        });
+
         jlp_jour.setLayer(jb_mode_nuit, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_titre_jour, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_intitule_visiteurs, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_nb_visiteurs, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jlp_jour.setLayer(jl_date, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jlp_jour.setLayer(jb_plus, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jlp_jourLayout = new javax.swing.GroupLayout(jlp_jour);
         jlp_jour.setLayout(jlp_jourLayout);
@@ -89,29 +128,39 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_jourLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jb_mode_nuit)
-                .addGap(133, 133, 133))
+                .addGap(130, 130, 130))
             .addGroup(jlp_jourLayout.createSequentialGroup()
+                .addGap(113, 113, 113)
                 .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jl_date, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jl_titre_jour))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jlp_jourLayout.createSequentialGroup()
+                .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jlp_jourLayout.createSequentialGroup()
                         .addGap(68, 68, 68)
                         .addComponent(jl_intitule_visiteurs)
-                        .addGap(35, 35, 35)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                         .addComponent(jl_nb_visiteurs, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jlp_jourLayout.createSequentialGroup()
-                        .addGap(113, 113, 113)
-                        .addComponent(jl_titre_jour)))
-                .addContainerGap(50, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jb_plus, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(59, Short.MAX_VALUE))
         );
         jlp_jourLayout.setVerticalGroup(
             jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_jourLayout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(jl_titre_jour, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jl_date, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jl_intitule_visiteurs)
                     .addComponent(jl_nb_visiteurs))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jb_plus)
+                .addGap(70, 70, 70)
                 .addComponent(jb_mode_nuit)
                 .addGap(57, 57, 57))
         );
@@ -159,30 +208,25 @@ public class MainWindow extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createSequentialGroup()
                         .addComponent(jl_ttitre_nuit, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(98, 98, 98))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createSequentialGroup()
-                            .addComponent(jb_intru, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jl_led, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(21, 21, 21))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createSequentialGroup()
-                            .addComponent(jb_mode_jour)
-                            .addGap(132, 132, 132)))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createSequentialGroup()
+                        .addComponent(jb_intru)
+                        .addGap(70, 70, 70)
+                        .addComponent(jl_led, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createSequentialGroup()
+                        .addComponent(jb_mode_jour)
+                        .addGap(132, 132, 132))))
         );
         jlp_nuitLayout.setVerticalGroup(
             jlp_nuitLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jlp_nuitLayout.createSequentialGroup()
                 .addGap(36, 36, 36)
                 .addComponent(jl_ttitre_nuit)
-                .addGroup(jlp_nuitLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jlp_nuitLayout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jl_led, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_nuitLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jb_intru)
-                        .addGap(70, 70, 70)))
+                .addGap(36, 36, 36)
+                .addGroup(jlp_nuitLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jl_led, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jb_intru))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(jb_mode_jour)
                 .addGap(56, 56, 56))
         );
@@ -210,7 +254,15 @@ public class MainWindow extends javax.swing.JFrame {
         jl_led.setBackground(c);
     }
     
+    public void setDate(String date)
+    {
+        jl_date.setText(date);
+    }
+    
     private void jb_mode_nuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_mode_nuitActionPerformed
+        setMode(NUIT);
+        //td.stop();
+        
         jlp_jour.setOpaque(false);
         jlp_nuit.setOpaque(true);
         
@@ -219,6 +271,13 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jb_mode_nuitActionPerformed
 
     private void jb_mode_jourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_mode_jourActionPerformed
+        setMode(JOUR);
+        setJour(getJour()+1);
+        //td.start();
+        
+        nbVisiteurs = 0;
+        jl_nb_visiteurs.setText(Integer.toString(nbVisiteurs));
+        
         ti.setActivation(false);
         setIntrusion(new Color(0,0,153));
         
@@ -233,6 +292,11 @@ public class MainWindow extends javax.swing.JFrame {
         ti.setActivation(true);
         ti.start();
     }//GEN-LAST:event_jb_intruActionPerformed
+
+    private void jb_plusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_plusActionPerformed
+        nbVisiteurs ++;
+        jl_nb_visiteurs.setText(Integer.toString(nbVisiteurs));
+    }//GEN-LAST:event_jb_plusActionPerformed
 
     /**
      * @param args the command line arguments
@@ -273,6 +337,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton jb_intru;
     private javax.swing.JButton jb_mode_jour;
     private javax.swing.JButton jb_mode_nuit;
+    private javax.swing.JButton jb_plus;
+    private javax.swing.JLabel jl_date;
     private javax.swing.JLabel jl_intitule_visiteurs;
     private javax.swing.JLabel jl_led;
     private javax.swing.JLabel jl_nb_visiteurs;

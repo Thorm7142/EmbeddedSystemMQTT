@@ -6,9 +6,28 @@
 package Windows;
 
 import Treatment.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import org.jfree.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  *
@@ -26,7 +45,9 @@ public class MainWindow extends javax.swing.JFrame {
     private boolean mode;
     private int jour;
     
-    int nbVisiteurs;
+    private int nbVisiteurs;
+    
+    private ArrayList<Integer> visiteursVect; // Pas de taille spécifiée
     
     ThreadIntruder ti;
     ThreadDate td; 
@@ -42,11 +63,23 @@ public class MainWindow extends javax.swing.JFrame {
     public int getJour() {
         return jour;
     }
+
+    public int getNbVisiteurs() {
+        return nbVisiteurs;
+    }
+
+    public void setNbVisiteurs(int nbVisiteurs) {
+        this.nbVisiteurs = nbVisiteurs;
+    }
+    
     
     
     
     public MainWindow() {
         initComponents();
+        
+        visiteursVect = new ArrayList<>();
+        visiteursVect.add(0);
         
         setMode(JOUR);
         setJour(0);
@@ -61,6 +94,8 @@ public class MainWindow extends javax.swing.JFrame {
         ti = new ThreadIntruder(false, this);
         td = new ThreadDate(true, this); 
         td.start();
+        
+        createGraph(visiteursVect);
         
     }
 
@@ -80,6 +115,7 @@ public class MainWindow extends javax.swing.JFrame {
         jl_nb_visiteurs = new javax.swing.JLabel();
         jl_date = new javax.swing.JLabel();
         jb_plus = new javax.swing.JButton();
+        jp_graph = new javax.swing.JPanel();
         jlp_nuit = new javax.swing.JLayeredPane();
         jb_mode_jour = new javax.swing.JButton();
         jl_ttitre_nuit = new javax.swing.JLabel();
@@ -114,38 +150,49 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout jp_graphLayout = new javax.swing.GroupLayout(jp_graph);
+        jp_graph.setLayout(jp_graphLayout);
+        jp_graphLayout.setHorizontalGroup(
+            jp_graphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 349, Short.MAX_VALUE)
+        );
+        jp_graphLayout.setVerticalGroup(
+            jp_graphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
         jlp_jour.setLayer(jb_mode_nuit, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_titre_jour, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_intitule_visiteurs, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_nb_visiteurs, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jl_date, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jlp_jour.setLayer(jb_plus, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jlp_jour.setLayer(jp_graph, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jlp_jourLayout = new javax.swing.GroupLayout(jlp_jour);
         jlp_jour.setLayout(jlp_jourLayout);
         jlp_jourLayout.setHorizontalGroup(
             jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_jourLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jb_mode_nuit)
-                .addGap(130, 130, 130))
             .addGroup(jlp_jourLayout.createSequentialGroup()
-                .addGap(113, 113, 113)
                 .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jl_date, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jl_titre_jour))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jlp_jourLayout.createSequentialGroup()
-                .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jlp_jourLayout.createSequentialGroup()
+                        .addGap(110, 110, 110)
+                        .addComponent(jb_mode_nuit))
                     .addGroup(jlp_jourLayout.createSequentialGroup()
                         .addGap(68, 68, 68)
                         .addComponent(jl_intitule_visiteurs)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                        .addComponent(jl_nb_visiteurs, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jl_nb_visiteurs, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jb_plus, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jlp_jourLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jb_plus, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(59, Short.MAX_VALUE))
+                        .addGap(113, 113, 113)
+                        .addGroup(jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jl_date, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jl_titre_jour))))
+                .addGap(36, 36, 36)
+                .addComponent(jp_graph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jlp_jourLayout.setVerticalGroup(
             jlp_jourLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,9 +207,13 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(jl_nb_visiteurs))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jb_plus)
-                .addGap(70, 70, 70)
+                .addGap(77, 77, 77)
                 .addComponent(jb_mode_nuit)
-                .addGap(57, 57, 57))
+                .addGap(50, 50, 50))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jlp_jourLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jp_graph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jlp_nuit.setBackground(new java.awt.Color(0, 0, 153));
@@ -249,6 +300,44 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    private void createGraph(ArrayList<Integer> arr) {
+
+        XYSeries series = new XYSeries("XYGraph");
+                
+        for(int i = 0; i < arr.size(); i++)
+        {
+            series.add(i, arr.get(i));
+        }
+
+        // Ajout de la série au dataset
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(series);
+
+        // Création du graphe
+        
+        JFreeChart chart = ChartFactory.createXYLineChart(
+        "Visiteurs quotidiens", // Titre
+        "Jours", // Titre Ox
+        "Visiteurs", // Titre Oy
+        dataset, // Dataset
+        PlotOrientation.VERTICAL, // Orientation du graphe
+        true, // Legende
+        false, // Tooltips ?
+        false // URLs ?
+        );
+        
+        // Ajout dans le JPanel
+        
+        jp_graph.setLayout(new java.awt.BorderLayout());
+        
+        ChartPanel CP = new ChartPanel(chart);
+        
+        jp_graph.add(CP,BorderLayout.CENTER);
+        jp_graph.validate();
+    }
+    
+    
     public void setIntrusion(Color c)
     {
         jl_led.setBackground(c);
@@ -275,8 +364,10 @@ public class MainWindow extends javax.swing.JFrame {
         setJour(getJour()+1);
         //td.start();
         
-        nbVisiteurs = 0;
-        jl_nb_visiteurs.setText(Integer.toString(nbVisiteurs));
+        setNbVisiteurs(0);
+        jl_nb_visiteurs.setText(Integer.toString(getNbVisiteurs()));
+        
+        visiteursVect.add(getNbVisiteurs());
         
         ti.setActivation(false);
         setIntrusion(new Color(0,0,153));
@@ -286,6 +377,8 @@ public class MainWindow extends javax.swing.JFrame {
         
         jlp_nuit.setVisible(false);
         jlp_jour.setVisible(true);
+        
+        createGraph(visiteursVect);
     }//GEN-LAST:event_jb_mode_jourActionPerformed
 
     private void jb_intruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_intruActionPerformed
@@ -294,8 +387,12 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jb_intruActionPerformed
 
     private void jb_plusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_plusActionPerformed
-        nbVisiteurs ++;
-        jl_nb_visiteurs.setText(Integer.toString(nbVisiteurs));
+        setNbVisiteurs((getNbVisiteurs()+1));
+        jl_nb_visiteurs.setText(Integer.toString(getNbVisiteurs()));
+
+        visiteursVect.set(getJour(), getNbVisiteurs());
+
+        createGraph(visiteursVect);
     }//GEN-LAST:event_jb_plusActionPerformed
 
     /**
@@ -346,5 +443,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jl_ttitre_nuit;
     private javax.swing.JLayeredPane jlp_jour;
     private javax.swing.JLayeredPane jlp_nuit;
+    private javax.swing.JPanel jp_graph;
     // End of variables declaration//GEN-END:variables
 }

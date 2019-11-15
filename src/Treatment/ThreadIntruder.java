@@ -30,20 +30,24 @@ public class ThreadIntruder  extends Thread{
     @Override
     public void run()
     {
-        while(activation == true)
-        { 
-            mw.setIntrusion(new Color(153,0,0), true);
+        while(true)
+        {
+            while(activation == true)
+            { 
+                mw.setIntrusion(new Color(153,0,0), true);
 
-            try{sleep(1000);} // On rafraichit toutes les secondes
-            catch (InterruptedException ex)
-            {System.out.println("Interrupt errror during Thread Intruder");}
+                try{sleep(1000);} // On rafraichit toutes les secondes
+                catch (InterruptedException ex)
+                {System.out.println("Interrupt errror during Thread Intruder");}
 
-            mw.setIntrusion(new Color(0,0,153), false);
+                mw.setIntrusion(new Color(0,0,153), false);
 
-            try{sleep(1000);}
-            catch (InterruptedException ex)
-            {System.out.println("Interrupt errror during Thread Intruder");}
+                try{sleep(1000);}
+                catch (InterruptedException ex)
+                {System.out.println("Interrupt errror during Thread Intruder");}
+            }
         }
+
     }
     
 

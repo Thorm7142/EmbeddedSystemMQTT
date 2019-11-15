@@ -48,11 +48,6 @@ public class ThreadDate extends Thread
         {
             Date date = new Date();
             
-            /*Calendar c = Calendar.getInstance();
-            int jour = c.get(Calendar.DAY_OF_MONTH);
-             
-            c.set(Calendar.DAY_OF_MONTH, (jour+mw.getJour()));*/
-            
             int jour = date.getDate();
             
             date.setDate((jour+mw.getJour()));

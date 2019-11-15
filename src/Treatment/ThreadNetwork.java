@@ -28,7 +28,7 @@ public class ThreadNetwork extends Thread implements MqttCallback{
     MqttClient myClient;
     MqttConnectOptions connOpt;
 
-    static final String BROKER_URL = "tcp://192.168.0.42:1883" ;
+    static final String BROKER_URL = "tcp://192.168.0.22:1883" ;
     static final String M2MIO_USERNAME = "<m2m.io username>";
     static final String M2MIO_PASSWORD_MD5 = "<m2m.io password (MD5 sum of password)>";
     
@@ -46,13 +46,13 @@ public class ThreadNetwork extends Thread implements MqttCallback{
     public int Connexion()
     {
         
-       String clientID = MqttClient.generateClientId();
+        String clientID = MqttClient.generateClientId();
         connOpt = new MqttConnectOptions();
 
         connOpt.setCleanSession(true);
 
-        connOpt.setUserName("babybaby"); // A CHANGER
-        connOpt.setPassword("wooooh".toCharArray()); // A CHANGER
+        connOpt.setUserName("root"); // A CHANGER
+        connOpt.setPassword("root".toCharArray()); // A CHANGER
         connOpt.setAutomaticReconnect(true);
 
         // Connect to Broker
@@ -60,7 +60,9 @@ public class ThreadNetwork extends Thread implements MqttCallback{
                 myClient = new MqttClient(BROKER_URL, clientID);
                 myClient.setCallback(this);
                 myClient.connect(connOpt);
-        } catch (MqttException e) {
+        } 
+        catch (MqttException e) 
+        {
                 e.printStackTrace();
                 System.exit(-1);
         }
@@ -79,17 +81,21 @@ public class ThreadNetwork extends Thread implements MqttCallback{
     public void init()
     {
         Connexion();
-        String myTopic = "yolo/swag"; // CHANGER
-        MqttTopic topic = myClient.getTopic(myTopic);
-        if (subscriber) {
-			try {
-				int subQoS = 0;
-				myClient.subscribe(myTopic, subQoS);
-                                System.out.println("SUBSCRIBED");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+        String myTopic = "topic/Intruder"; // CHANGER
+        //MqttTopic topic = myClient.getTopic(myTopic);
+        if (subscriber) 
+        {
+            try 
+            {
+                    int subQoS = 0;
+                    myClient.subscribe(myTopic, subQoS);
+                    System.out.println("SUBSCRIBED");
+            } 
+            catch (Exception e) 
+            {
+                    e.printStackTrace();
+            }
+        }
 
 		// publish messages if publisher
 		/*if (publisher) {
@@ -142,20 +148,28 @@ public class ThreadNetwork extends Thread implements MqttCallback{
         
         if(mw.getMode()) // Mode NUIT
         {            
-            mw.getTi().setActivation(true);
-            mw.getTi().start();
+            if(Integer.parseInt(mm.toString()) == 0)
+            {
+                mw.getTi().setActivation(true);
+            }
+
         }
         else // Mode JOUR
         {
-            mw.Update();
-            buzz(1000);
+            if(Integer.parseInt(mm.toString()) == 0)
+            {
+                mw.Update();
+            }
+            
+            //buzz(1000);
         }
+        //System.out.println("string = " + string);
         
     }
     
     public void buzz(int milli)
     {
-        String myTopic = "yolo/swag"; // A CHANGER
+        String myTopic = "topic/Intruder"; // A CHANGER
         MqttTopic topic = myClient.getTopic(myTopic);
         
         String pubMsg = "b" +  Integer.toString(milli);
@@ -170,8 +184,8 @@ public class ThreadNetwork extends Thread implements MqttCallback{
         MqttDeliveryToken token = null;
         // publish message to broker
         try {
-            //token = topic.publish(message);
-            myClient.publish("yolo/trompette",message); // CHANGER
+            //token = topic.publish(message);²
+            myClient.publish("topic/buzzer",message); // CHANGER
         } catch (MqttException ex) {
             Logger.getLogger(ThreadNetwork.class.getName()).log(Level.SEVERE, null, ex);
         }

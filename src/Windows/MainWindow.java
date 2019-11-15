@@ -113,6 +113,9 @@ public class MainWindow extends javax.swing.JFrame {
         
         createGraph(visiteursVect);
         
+        ThreadNetwork tn = new ThreadNetwork(this);
+        tn.start();
+        
     }
 
     /**
